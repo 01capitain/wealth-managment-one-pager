@@ -1,0 +1,2161 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Langfristig investieren — ETF Story</title>
+    <style>
+      :root {
+        --bg: #08090d;
+        --panel: rgba(255, 255, 255, 0.055);
+        --panel-strong: rgba(255, 255, 255, 0.085);
+        --text: #f4f5f7;
+        --muted: #aeb4c2;
+        --soft: #6f7787;
+        --accent: #7ee787;
+        --accent-2: #87b7ff;
+        --warn: #ffcf70;
+        --danger: #ff7b72;
+        --line: rgba(255, 255, 255, 0.16);
+        --shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
+        --radius: 28px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI",
+          Roboto, Helvetica, Arial, sans-serif;
+      }
+      body {
+        background:
+          radial-gradient(
+            circle at 15% 10%,
+            rgba(126, 231, 135, 0.16),
+            transparent 28%
+          ),
+          radial-gradient(
+            circle at 78% 20%,
+            rgba(135, 183, 255, 0.13),
+            transparent 31%
+          ),
+          radial-gradient(
+            circle at 55% 90%,
+            rgba(255, 207, 112, 0.08),
+            transparent 28%
+          ),
+          var(--bg);
+      }
+
+      .deck {
+        height: 100vh;
+        width: 100vw;
+        position: relative;
+      }
+      .view {
+        position: absolute;
+        inset: 0;
+        padding: clamp(36px, 5vw, 82px);
+        display: grid;
+        grid-template-columns: minmax(0, 0.95fr) minmax(340px, 0.82fr);
+        gap: clamp(26px, 4vw, 56px);
+        align-items: center;
+        opacity: 0;
+        transform: translateY(30px) scale(0.985);
+        pointer-events: none;
+        transition:
+          opacity 0.75s cubic-bezier(0.2, 0.8, 0.2, 1),
+          transform 0.75s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .view.active {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+      }
+      .view > div:first-child {
+        max-width: 820px;
+      }
+      .view > div:first-child p:not(.lead) {
+        max-width: 720px;
+      }
+      .view.exit-up {
+        transform: translateY(-26px) scale(0.99);
+      }
+      .view.exit-down {
+        transform: translateY(26px) scale(0.99);
+      }
+
+      .kicker {
+        color: var(--accent);
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        font-size: 12px;
+        margin-bottom: 16px;
+      }
+      h1 {
+        font-size: clamp(38px, 4.8vw, 72px);
+        line-height: 1.02;
+        letter-spacing: -0.045em;
+        margin: 0 0 22px;
+      }
+      h2 {
+        font-size: clamp(34px, 4.1vw, 58px);
+        line-height: 1.04;
+        letter-spacing: -0.04em;
+        margin: 0 0 18px;
+      }
+      p {
+        font-size: clamp(17px, 1.45vw, 22px);
+        line-height: 1.42;
+        color: var(--muted);
+        margin: 0 0 18px;
+      }
+      .lead {
+        font-size: clamp(20px, 1.9vw, 28px);
+        color: #fff;
+        line-height: 1.26;
+        letter-spacing: -0.025em;
+      }
+      .small {
+        font-size: 15px;
+        line-height: 1.45;
+        color: var(--soft);
+      }
+      .panel {
+        background: linear-gradient(180deg, var(--panel-strong), var(--panel));
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: 0 18px 60px rgba(0, 0, 0, 0.32);
+        padding: clamp(22px, 2.4vw, 34px);
+        backdrop-filter: blur(18px);
+      }
+      .big-number {
+        font-size: clamp(44px, 5.6vw, 84px);
+        line-height: 0.92;
+        letter-spacing: -0.045em;
+        font-weight: 800;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .accent {
+        color: var(--accent);
+      }
+      .warn {
+        color: var(--warn);
+      }
+      .danger {
+        color: var(--danger);
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        border-bottom: 1px solid var(--line);
+        padding: 12px 0;
+        font-size: 15px;
+      }
+      .row:last-child {
+        border-bottom: 0;
+      }
+      .pill {
+        padding: 8px 12px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--muted);
+        font-size: 14px;
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .dots {
+        position: fixed;
+        right: 28px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 20;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 99px;
+        background: rgba(255, 255, 255, 0.28);
+        border: 0;
+        padding: 0;
+        cursor: pointer;
+        transition: 0.25s;
+      }
+      .dot.active {
+        height: 34px;
+        background: var(--accent);
+      }
+      .navhint {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: rgba(255, 255, 255, 0.48);
+        font-size: 14px;
+        z-index: 20;
+      }
+      .counter {
+        position: fixed;
+        top: 24px;
+        right: 28px;
+        color: rgba(255, 255, 255, 0.48);
+        font-size: 14px;
+        z-index: 20;
+      }
+
+      .steps {
+        display: grid;
+        gap: 10px;
+      }
+      .steps-title {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 4px;
+      }
+      .steps-title strong {
+        color: #fff;
+        font-size: 15px;
+      }
+      .steps-title span {
+        color: var(--soft);
+        font-size: 12px;
+      }
+      .step {
+        display: grid;
+        grid-template-columns: 34px 1fr;
+        gap: 12px;
+        align-items: start;
+        padding: 10px 12px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.045);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        opacity: 0.52;
+        transform: translateX(12px);
+        transition: 0.55s;
+      }
+      .step.current {
+        opacity: 1;
+        background: linear-gradient(
+          180deg,
+          rgba(126, 231, 135, 0.14),
+          rgba(126, 231, 135, 0.055)
+        );
+        border-color: rgba(126, 231, 135, 0.42);
+        box-shadow: 0 16px 42px rgba(0, 0, 0, 0.22);
+      }
+      .active .step {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      .active .step:nth-child(1) {
+        transition-delay: 0.1s;
+      }
+      .active .step:nth-child(2) {
+        transition-delay: 0.18s;
+      }
+      .active .step:nth-child(3) {
+        transition-delay: 0.26s;
+      }
+      .active .step:nth-child(4) {
+        transition-delay: 0.34s;
+      }
+      .active .step:nth-child(5) {
+        transition-delay: 0.42s;
+      }
+      .active .step:nth-child(6) {
+        transition-delay: 0.5s;
+      }
+      .active .step:nth-child(7) {
+        transition-delay: 0.58s;
+      }
+      .active .step:nth-child(8) {
+        transition-delay: 0.66s;
+      }
+      .badge {
+        position: relative;
+        width: 34px;
+        height: 34px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        background: rgba(255, 255, 255, 0.07);
+        color: var(--muted);
+        font-weight: 800;
+      }
+      .step.done .badge {
+        background: rgba(126, 231, 135, 0.12);
+        color: var(--accent);
+      }
+      .step.done .badge::after {
+        content: "✓";
+        position: absolute;
+        right: -5px;
+        top: -6px;
+        width: 17px;
+        height: 17px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        background: var(--accent);
+        color: #071009;
+        font-size: 12px;
+        line-height: 1;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+      }
+      .current .badge {
+        background: rgba(126, 231, 135, 0.16);
+        color: var(--accent);
+      }
+      .step strong {
+        display: block;
+        color: #fff;
+        margin-bottom: 3px;
+      }
+      .step span {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.35;
+      }
+
+      .donut {
+        width: min(420px, 90%);
+        aspect-ratio: 1;
+        border-radius: 50%;
+        margin: 0 auto 28px;
+        background: conic-gradient(
+          var(--accent-2) 0 70%,
+          var(--accent) 70% 100%
+        );
+        position: relative;
+        transform: rotate(-70deg) scale(0.86);
+        opacity: 0.4;
+        transition: 0.85s;
+      }
+      .active .donut {
+        transform: rotate(-90deg) scale(1);
+        opacity: 1;
+      }
+      .donut::after {
+        content: "70 / 30";
+        position: absolute;
+        inset: 17%;
+        border-radius: 50%;
+        background: #10131a;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-size: 38px;
+        font-weight: 800;
+        transform: rotate(90deg);
+      }
+
+      svg {
+        width: 100%;
+        overflow: visible;
+      }
+      .chart-line {
+        fill: none;
+        stroke: var(--accent);
+        stroke-width: 5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1100;
+        stroke-dashoffset: 1100;
+      }
+      .active .chart-line {
+        animation: draw 1.5s 0.25s forwards cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .chart-line.blue {
+        stroke: var(--accent-2);
+      }
+      .chart-line.warnline {
+        stroke: var(--warn);
+      }
+      @keyframes draw {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+      .bar {
+        transform-origin: bottom;
+        transform: scaleY(0.12);
+        transition: 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .active .bar {
+        transform: scaleY(1);
+      }
+      .active .bar:nth-child(2) {
+        transition-delay: 0.15s;
+      }
+      .active .bar:nth-child(3) {
+        transition-delay: 0.3s;
+      }
+
+      .riskgrid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+      .risk {
+        padding: 16px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.055);
+        border-radius: 20px;
+        transform: translateY(12px);
+        opacity: 0.25;
+        transition: 0.55s;
+      }
+      .active .risk {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      .active .risk:nth-child(1) {
+        transition-delay: 0.08s;
+      }
+      .active .risk:nth-child(2) {
+        transition-delay: 0.16s;
+      }
+      .active .risk:nth-child(3) {
+        transition-delay: 0.24s;
+      }
+      .active .risk:nth-child(4) {
+        transition-delay: 0.32s;
+      }
+      .risk strong {
+        display: block;
+        font-size: 17px;
+        margin-bottom: 8px;
+      }
+      .risk span {
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.4;
+      }
+
+      .phone {
+        width: min(360px, 92%);
+        margin: auto;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 42px;
+        padding: 18px;
+        background: linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.16),
+          rgba(255, 255, 255, 0.05)
+        );
+        box-shadow: 0 18px 60px rgba(0, 0, 0, 0.32);
+      }
+      .screen {
+        border-radius: 30px;
+        background: #11151d;
+        padding: 24px;
+        min-height: 500px;
+      }
+      .check {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 11px 0;
+        border-bottom: 1px solid var(--line);
+        color: var(--muted);
+      }
+      .check::before {
+        content: "✓";
+        color: var(--accent);
+        font-weight: 800;
+      }
+
+      .source {
+        margin-top: 20px;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.36);
+        line-height: 1.4;
+      }
+      .sparplan-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 14px;
+        padding: 12px 14px;
+        margin-bottom: 8px;
+      }
+      .sparplan-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 3px;
+      }
+      .sparplan-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: #e4e6ea;
+      }
+      .sparplan-badge {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 99px;
+      }
+      .sparplan-badge.world {
+        background: rgba(135, 183, 255, 0.15);
+        color: rgba(135, 183, 255, 0.9);
+      }
+      .sparplan-badge.em {
+        background: rgba(126, 231, 135, 0.12);
+        color: rgba(126, 231, 135, 0.85);
+      }
+      .sparplan-detail {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .setup-badge {
+        margin-top: 14px;
+        background: rgba(126, 231, 135, 0.07);
+        border: 1px solid rgba(126, 231, 135, 0.2);
+        border-radius: 12px;
+        padding: 10px 14px;
+        text-align: center;
+        font-size: 12px;
+        color: rgba(126, 231, 135, 0.82);
+        letter-spacing: 0.01em;
+      }
+      .panel-pager {
+        padding: 0;
+        overflow: hidden;
+      }
+      .panel-tabs {
+        position: absolute;
+        right: 18px;
+        bottom: 16px;
+        z-index: 3;
+        display: flex;
+        gap: 6px;
+        padding: 4px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 999px;
+        background: rgba(8, 9, 13, 0.42);
+        backdrop-filter: blur(12px);
+      }
+      .panel-tab {
+        border: 0;
+        border-radius: 999px;
+        background: transparent;
+        padding: 6px 10px;
+        color: rgba(255, 255, 255, 0.46);
+        font-size: 12px;
+        line-height: 1;
+        cursor: pointer;
+        transition: 0.25s;
+      }
+      .panel-tab.active {
+        background: rgba(255, 255, 255, 0.12);
+        color: rgba(255, 255, 255, 0.88);
+      }
+      .panel-page {
+        display: none;
+        padding: clamp(22px, 2.4vw, 34px);
+      }
+      .panel-page.active {
+        display: block;
+      }
+      .statline {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        align-items: baseline;
+        margin: 18px 0 10px;
+      }
+      .statline span {
+        color: var(--muted);
+        font-size: 15px;
+      }
+      .statline strong {
+        font-size: clamp(38px, 4.6vw, 66px);
+        letter-spacing: -0.045em;
+        line-height: 0.95;
+      }
+      .chart-frame {
+        display: grid;
+        grid-template-columns: 38px 1fr;
+        grid-template-rows: 170px auto;
+        gap: 8px 10px;
+        margin: 20px 0 10px;
+      }
+      .y-axis {
+        grid-column: 1;
+        grid-row: 1;
+        position: relative;
+        color: rgba(255, 255, 255, 0.42);
+        font-size: 11px;
+      }
+      .y-axis span {
+        position: absolute;
+        right: 0;
+        transform: translateY(50%);
+      }
+      .y-axis span:nth-child(1) {
+        bottom: 100%;
+      }
+      .y-axis span:nth-child(2) {
+        bottom: calc(5 / 7 * 100%);
+      }
+      .y-axis span:nth-child(3) {
+        bottom: calc(3 / 7 * 100%);
+      }
+      .y-axis span:nth-child(4) {
+        bottom: 0;
+      }
+      .mini-chart {
+        grid-column: 2;
+        grid-row: 1;
+        position: relative;
+        height: 170px;
+        display: flex;
+        align-items: flex-end;
+        gap: 4px;
+        padding-top: 12px;
+        border-bottom: 1px solid var(--line);
+        border-left: 1px solid rgba(255, 255, 255, 0.12);
+      }
+      .target-line {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: calc(2 / 7 * 100%);
+        z-index: 2;
+        border-top: 1px dashed rgba(255, 255, 255, 0.42);
+      }
+      .target-line span {
+        position: absolute;
+        right: 0;
+        top: -18px;
+        color: rgba(255, 255, 255, 0.52);
+        font-size: 11px;
+      }
+      .x-axis {
+        grid-column: 2;
+        grid-row: 2;
+        display: flex;
+        justify-content: space-between;
+        color: rgba(255, 255, 255, 0.42);
+        font-size: 11px;
+      }
+      .axis-corner {
+        grid-column: 1;
+        grid-row: 2;
+      }
+      .mini-bar {
+        position: relative;
+        z-index: 1;
+        flex: 1;
+        min-width: 3px;
+        border-radius: 5px 5px 0 0;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 207, 112, 0.9),
+          rgba(255, 207, 112, 0.32)
+        );
+      }
+      .mini-bar.low {
+        background: linear-gradient(
+          180deg,
+          rgba(135, 183, 255, 0.75),
+          rgba(135, 183, 255, 0.22)
+        );
+      }
+      .mini-bar.high {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 123, 114, 0.9),
+          rgba(255, 123, 114, 0.28)
+        );
+      }
+      .inflation-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 7px 16px;
+        margin-top: 18px;
+      }
+      .inflation-list div {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        color: var(--muted);
+        font-size: 13px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding-bottom: 5px;
+      }
+      .inflation-list strong {
+        color: #fff;
+        font-weight: 650;
+      }
+      .panel-pager {
+        position: relative;
+        padding-bottom: 20px;
+      }
+      .triangle {
+        display: grid;
+        grid-template-columns: repeat(9, 1fr);
+        gap: 5px;
+        align-items: end;
+        margin-top: 18px;
+      }
+      .cell {
+        aspect-ratio: 1;
+        border-radius: 6px;
+        background: rgba(126, 231, 135, 0.25);
+        opacity: 0.2;
+        transition: 0.4s;
+      }
+      .cell.red {
+        background: rgba(255, 123, 114, 0.55);
+      }
+      .cell.yellow {
+        background: rgba(255, 207, 112, 0.55);
+      }
+      .cell.green {
+        background: rgba(126, 231, 135, 0.55);
+      }
+      .active .cell {
+        opacity: 1;
+      }
+      .return-panel {
+        display: grid;
+        gap: 18px;
+      }
+      .return-triangle-wrap {
+        display: grid;
+        grid-template-columns: 42px 1fr;
+        grid-template-rows: auto 1fr auto;
+        gap: 8px 10px;
+      }
+      .return-axis-label {
+        color: rgba(255, 255, 255, 0.42);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .return-y-label {
+        grid-column: 1;
+        grid-row: 2;
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        justify-self: center;
+        align-self: center;
+      }
+      .return-x-label {
+        grid-column: 2;
+        grid-row: 3;
+        justify-self: center;
+      }
+      .return-years {
+        grid-column: 2;
+        grid-row: 1;
+        display: flex;
+        justify-content: space-between;
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 11px;
+      }
+      .return-start-years {
+        grid-column: 1;
+        grid-row: 2;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: end;
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 11px;
+        padding-right: 22px;
+      }
+      .return-triangle {
+        grid-column: 2;
+        grid-row: 2;
+        display: grid;
+        grid-template-columns: repeat(27, minmax(10px, 1fr));
+        grid-template-rows: repeat(27, minmax(10px, 1fr));
+        gap: 2px;
+        min-height: min(52vh, 390px);
+      }
+      .return-cell {
+        aspect-ratio: 1;
+        border-radius: 3px;
+        opacity: 0.18;
+        transition: 0.45s;
+        cursor: default;
+      }
+      .return-cell.show-value {
+        display: grid;
+        place-items: center;
+        font-size: clamp(5px, 0.5vw, 8px);
+        font-weight: 700;
+        color: rgba(8, 9, 13, 0.85);
+        line-height: 1;
+      }
+      .return-cell.anchor {
+        outline: 2px solid var(--accent);
+        outline-offset: 1px;
+        z-index: 1;
+      }
+      .return-tooltip {
+        position: fixed;
+        background: rgba(10, 12, 18, 0.94);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 10px;
+        padding: 7px 12px;
+        color: #f4f5f7;
+        font-size: 13px;
+        white-space: pre;
+        pointer-events: none;
+        z-index: 100;
+        opacity: 0;
+        transition: opacity 0.12s;
+        backdrop-filter: blur(14px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.44);
+      }
+      .return-tooltip.visible {
+        opacity: 1;
+      }
+      .active .return-cell {
+        opacity: 1;
+      }
+      .return-cell.negative {
+        background: rgba(255, 123, 114, 0.82);
+      }
+      .return-cell.neutral {
+        background: rgba(255, 207, 112, 0.74);
+      }
+      .return-cell.positive {
+        background: rgba(126, 231, 135, 0.68);
+      }
+      .return-cell.strong {
+        background: rgba(126, 231, 135, 0.88);
+      }
+      .return-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 14px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .return-legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .return-legend i {
+        width: 10px;
+        height: 10px;
+        border-radius: 3px;
+        display: inline-block;
+      }
+      .return-legend .negative i {
+        background: rgba(255, 123, 114, 0.82);
+      }
+      .return-legend .neutral i {
+        background: rgba(255, 207, 112, 0.74);
+      }
+      .return-legend .positive i {
+        background: rgba(126, 231, 135, 0.78);
+      }
+      .return-chart-area {
+        position: relative;
+        height: 140px;
+        margin: 12px 0 4px;
+        border-left: 1px solid rgba(255, 255, 255, 0.12);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        overflow: hidden;
+      }
+      .return-chart-x-axis {
+        display: flex;
+        justify-content: space-between;
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 10px;
+        margin-bottom: 10px;
+      }
+      .return-zero-line {
+        position: absolute;
+        left: 0;
+        right: 0;
+        border-top: 1px dashed rgba(255, 255, 255, 0.28);
+        z-index: 2;
+        pointer-events: none;
+      }
+      .return-avg-line {
+        position: absolute;
+        left: 0;
+        right: 0;
+        border-top: 1px dashed rgba(126, 231, 135, 0.42);
+        z-index: 2;
+        pointer-events: none;
+      }
+      .return-avg-line::after {
+        content: attr(data-label);
+        position: absolute;
+        right: 4px;
+        top: -13px;
+        color: rgba(126, 231, 135, 0.62);
+        font-size: 9px;
+        white-space: nowrap;
+      }
+      .rbar {
+        position: absolute;
+        transition: transform 0.65s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .rbar.pos {
+        background: linear-gradient(
+          180deg,
+          rgba(126, 231, 135, 0.82),
+          rgba(126, 231, 135, 0.28)
+        );
+        border-radius: 2px 2px 0 0;
+        transform-origin: bottom;
+        transform: scaleY(0);
+      }
+      .rbar.neg {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 123, 114, 0.28),
+          rgba(255, 123, 114, 0.82)
+        );
+        border-radius: 0 0 2px 2px;
+        transform-origin: top;
+        transform: scaleY(0);
+      }
+      .active .rbar {
+        transform: scaleY(1);
+      }
+      .scenario-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+      }
+      .scenario-sep {
+        border-left: 1px solid var(--line);
+        padding-left: 14px;
+      }
+      .compound-bar-group {
+        transform-box: fill-box;
+        transform-origin: 50% 100%;
+        transform: scaleY(0);
+        transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .active .compound-bar-group {
+        transform: scaleY(1);
+      }
+      .scenario-end {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-top: 7px;
+        padding-top: 7px;
+        border-top: 1px solid var(--line);
+      }
+      .scenario-label {
+        font-size: 11px;
+        color: var(--soft);
+      }
+      .scenario-amount {
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1;
+      }
+      .compound-summary {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid var(--line);
+      }
+      .compound-summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 2px 0;
+      }
+      .compound-summary-row span {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .compound-summary-row strong {
+        font-size: 12px;
+        color: #e4e6ea;
+        font-weight: 700;
+      }
+      .compound-summary-row.total strong {
+        font-size: 14px;
+        color: var(--accent);
+      }
+      .compound-multiplier {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--accent);
+        background: rgba(126, 231, 135, 0.1);
+        border: 1px solid rgba(126, 231, 135, 0.25);
+        border-radius: 99px;
+        padding: 3px 10px;
+        margin-bottom: 7px;
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      .risk-compact {
+        padding: 8px 10px;
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 12px;
+      }
+      .risk-compact strong {
+        display: block;
+        font-size: 13px;
+        color: #fff;
+        margin-bottom: 2px;
+      }
+      .risk-compact span {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.3;
+      }
+
+      /* ── iPhone mockup ── */
+      .iphone-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .iphone {
+        position: relative;
+        width: 258px;
+        background: linear-gradient(160deg, #2e2e30 0%, #1c1c1e 100%);
+        border-radius: 52px;
+        padding: 10px;
+        box-shadow:
+          inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+          inset 0 0 0 3px #000,
+          0 60px 140px rgba(0, 0, 0, 0.72),
+          0 12px 36px rgba(0, 0, 0, 0.45);
+      }
+      .iphone::after {
+        content: '';
+        position: absolute;
+        right: -3.5px;
+        top: 112px;
+        width: 3.5px;
+        height: 70px;
+        background: #2c2c2e;
+        border-radius: 0 2.5px 2.5px 0;
+        box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.06);
+      }
+      .iphone-btns {
+        position: absolute;
+        left: -3.5px;
+        top: 80px;
+        display: flex;
+        flex-direction: column;
+        gap: 11px;
+      }
+      .iphone-btn {
+        width: 3.5px;
+        background: #2c2c2e;
+        border-radius: 2.5px 0 0 2.5px;
+        box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.06);
+      }
+      .iphone-screen {
+        border-radius: 44px;
+        overflow: hidden;
+        background: linear-gradient(175deg, #07081a 0%, #060d1c 40%, #050e0c 100%);
+        position: relative;
+      }
+      .iphone-island {
+        width: 108px;
+        height: 32px;
+        background: #000;
+        border-radius: 22px;
+        margin: 10px auto 0;
+        position: relative;
+        z-index: 2;
+      }
+      .ios-status {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px 22px 0;
+        font-size: 12px;
+        font-weight: 600;
+        color: #fff;
+        font-family: -apple-system, 'SF Pro Text', system-ui, sans-serif;
+      }
+      .ios-status-icons {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .ios-time-big {
+        text-align: center;
+        font-size: 72px;
+        font-weight: 200;
+        color: #fff;
+        letter-spacing: -3px;
+        line-height: 1;
+        margin: 8px 0 3px;
+        font-family: -apple-system, 'SF Pro Display', system-ui, sans-serif;
+      }
+      .ios-date {
+        text-align: center;
+        font-size: 15px;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.78);
+        margin-bottom: 18px;
+        font-family: -apple-system, 'SF Pro Text', system-ui, sans-serif;
+      }
+      .ios-notifs {
+        padding: 0 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .ios-notif {
+        background: rgba(28, 28, 32, 0.84);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 16px;
+        padding: 11px 12px 12px;
+      }
+      .ios-notif-head {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 5px;
+      }
+      .tr-app-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        background: linear-gradient(145deg, #3dbb6c, #2a9457);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 800;
+        color: #fff;
+        flex-shrink: 0;
+        font-family: -apple-system, system-ui, sans-serif;
+        letter-spacing: -0.5px;
+      }
+      .ios-notif-appname {
+        font-size: 12px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.48);
+        flex: 1;
+        font-family: -apple-system, system-ui, sans-serif;
+      }
+      .ios-notif-ts {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.3);
+        font-family: -apple-system, system-ui, sans-serif;
+      }
+      .ios-notif-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 2px;
+        font-family: -apple-system, system-ui, sans-serif;
+      }
+      .ios-notif-body {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.58);
+        line-height: 1.35;
+        font-family: -apple-system, system-ui, sans-serif;
+      }
+      .ios-home-bar {
+        width: 120px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 2px;
+        margin: 18px auto 12px;
+      }
+      @media (max-width: 900px) {
+        .view {
+          grid-template-columns: 1fr;
+          overflow-y: auto;
+          align-items: start;
+          padding-right: 56px;
+        }
+        h1 {
+          font-size: 38px;
+        }
+        h2 {
+          font-size: 34px;
+        }
+        p,
+        .lead {
+          font-size: 18px;
+        }
+        .riskgrid {
+          grid-template-columns: 1fr;
+        }
+        .navhint {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="deck" id="deck">
+      <section class="view active" data-title="Kaufkraft">
+        <div>
+          <div class="kicker">1 · Kaufkraft</div>
+          <h1>Ein Sparkonto schützt den Betrag, aber nicht die Kaufkraft.</h1>
+          <p class="lead">
+            20.000€ aus 1995 haben heute – 30 Jahre später – nur noch etwa
+            <span class="warn">11.648€</span> Kaufkraft.
+          </p>
+          <p>
+            Das Risiko sieht man nicht am Kontostand, sondern daran, was man
+            sich später dafür leisten kann.
+          </p>
+        </div>
+        <div class="panel panel-pager">
+          <div class="panel-tabs" aria-label="Kaufkraft-Ansichten">
+            <button class="panel-tab active" type="button" data-panel-tab="0">
+              Historisch
+            </button>
+            <button class="panel-tab" type="button" data-panel-tab="1">
+              Jahre
+            </button>
+            <button class="panel-tab" type="button" data-panel-tab="2">
+              Modell
+            </button>
+          </div>
+
+          <div class="panel-page active">
+            <div class="small">Kaufkraft von 20.000€ seit 1995</div>
+            <div id="purchasingPowerList"></div>
+            <div class="row">
+              <span>Ø Inflation 1995–2025</span><strong>1,8% p.a.</strong>
+            </div>
+            <p class="source">
+              Rechnung auf Basis des deutschen Verbraucherpreisindex: 20.000€ ×
+              VPI 1995 / VPI Jahr. Quelle: Destatis VPI, Jahreswerte, Basis 2020
+              = 100.
+            </p>
+          </div>
+
+          <div class="panel-page">
+            <div class="small">Jährliche Inflation in Deutschland</div>
+            <div
+              class="chart-frame"
+              aria-label="Jährliche Inflation in Deutschland von 1995 bis 2025"
+            >
+              <div class="y-axis" aria-hidden="true">
+                <span>7%</span>
+                <span>5%</span>
+                <span>3%</span>
+                <span>0%</span>
+              </div>
+              <div class="mini-chart" id="inflationChart">
+                <div class="target-line" aria-hidden="true">
+                  <span>2%</span>
+                </div>
+              </div>
+              <div class="axis-corner" aria-hidden="true"></div>
+              <div class="x-axis" aria-hidden="true">
+                <span>1995</span>
+                <span>2000</span>
+                <span>2005</span>
+                <span>2010</span>
+                <span>2015</span>
+                <span>2020</span>
+                <span>2025</span>
+              </div>
+            </div>
+            <div class="row">
+              <span>Modellannahme</span><strong>2,0% p.a.</strong>
+            </div>
+            <div class="row">
+              <span>Spanne 1995–2025</span><strong>0,3% bis 6,9%</strong>
+            </div>
+            <p class="source">
+              Die 2% sind keine Garantie, sondern eine vereinfachte Annahme.
+              Historisch lag der Durchschnitt nahe daran, einzelne Jahre wichen
+              deutlich ab.
+            </p>
+          </div>
+
+          <div class="panel-page">
+            <div class="small">
+              Modellrechnung: Kaufkraft von 20.000€ bei 2% Inflation
+            </div>
+            <div class="row"><span>Heute</span><strong>20.000€</strong></div>
+            <div class="row">
+              <span>In 10 Jahren</span><strong>16.407€</strong>
+            </div>
+            <div class="row">
+              <span>In 20 Jahren</span><strong>13.459€</strong>
+            </div>
+            <div class="row">
+              <span>In 30 Jahren</span><strong class="warn">11.041€</strong>
+            </div>
+            <p class="source">
+              Modellrechnung: 20.000€ / 1,02^Jahre. Die 2% sind eine
+              vereinfachte Annahme.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" data-title="Stabilität">
+        <div>
+          <div class="kicker">2 · Erst Stabilität</div>
+          <h2>Erst absichern, dann investieren.</h2>
+          <p class="lead">
+            Dave Ramseys Baby Steps geben dafür eine einfache Reihenfolge: erst
+            Stabilität, dann langfristiger Vermögensaufbau.
+          </p>
+          <p>
+            Wenn unerwartete Kosten abgefangen sind, muss ein ETF nicht beim
+            ersten Problem verkauft werden. Darum: Erst Schritte 1 bis 3
+            abhaken, dann Step 4.
+          </p>
+        </div>
+        <div class="panel steps">
+          <div class="steps-title">
+            <strong>Dave Ramsey: 7 Baby Steps</strong>
+          </div>
+          <div class="step done">
+            <div class="badge">1</div>
+            <div>
+              <strong>Starter-Notgroschen</strong
+              ><span>1.000€ als erste Rücklage für unerwartete Ausgaben.</span>
+            </div>
+          </div>
+          <div class="step done">
+            <div class="badge">2</div>
+            <div>
+              <strong>Schulden abbauen</strong
+              ><span
+                >Alle Schulden außer Hauskredit per Debt Snowball tilgen.</span
+              >
+            </div>
+          </div>
+          <div class="step done">
+            <div class="badge">3</div>
+            <div>
+              <strong>3–6 Monatsausgaben Rücklage</strong
+              ><span
+                >Ein voller Notgroschen, hier grob ca. 5.000€, bevor man
+                Marktrisiko eingeht.</span
+              >
+            </div>
+          </div>
+          <div class="step current">
+            <div class="badge">4</div>
+            <div>
+              <strong>15% langfristig investieren</strong
+              ><span
+                >Unser Punkt: 20.000€ einmalig plus 400€ monatlich. Breit
+                gestreut, langer Zeithorizont.</span
+              >
+            </div>
+          </div>
+          <div class="step">
+            <div class="badge">5</div>
+            <div>
+              <strong>Ausbildung der Kinder</strong
+              ><span>Zusätzlich zu Step 4. Zum Beispiel als Kinderdepot.</span>
+            </div>
+          </div>
+          <div class="step">
+            <div class="badge">6</div>
+            <div>
+              <strong>Haus früh abbezahlen</strong
+              ><span>Die eigene Immobilie schneller schuldenfrei machen.</span>
+            </div>
+          </div>
+          <div class="step">
+            <div class="badge">7</div>
+            <div>
+              <strong>Vermögen aufbauen und geben</strong
+              ><span>Langfristig Wohlstand aufbauen und großzügig sein.</span>
+            </div>
+          </div>
+          <p class="source">
+            Quelle: Ramsey Solutions Help Center, „What are the 7 Baby Steps?“
+            Step 4: 15% des Haushaltseinkommens für den Ruhestand investieren.
+          </p>
+        </div>
+      </section>
+
+      <section class="view" data-title="ETF">
+        <div>
+          <div class="kicker">3 · Zeit reduziert Schwankung</div>
+          <h2>Kurzfristig kann ein ETF fallen. Langfristig sah das historisch anders aus.</h2>
+          <p class="lead">
+            Das MSCI World Renditedreieck zeigt: Je länger die Anlagedauer,
+            desto seltener waren negative Ergebnisse.
+          </p>
+          <p>
+            Deshalb passt ein ETF nicht für den Notgroschen, aber für Geld, das
+            über viele Jahre investiert bleiben kann.
+          </p>
+        </div>
+        <div class="panel return-panel">
+          <div class="small">MSCI World Renditedreieck ab Startjahr 1995</div>
+          <div
+            class="return-triangle-wrap"
+            aria-label="Vereinfachtes MSCI World Renditedreieck von 1995 bis 2022"
+          >
+            <div class="return-years" aria-hidden="true">
+              <span>1996</span>
+              <span>2000</span>
+              <span>2005</span>
+              <span>2010</span>
+              <span>2015</span>
+              <span>2022</span>
+            </div>
+            <div class="return-start-years" aria-hidden="true">
+              <span>2021</span>
+              <span>2015</span>
+              <span>2005</span>
+              <span>1995</span>
+            </div>
+            <div class="return-axis-label return-y-label" aria-hidden="true">
+              Start
+            </div>
+            <div class="return-triangle" id="returnTriangle"></div>
+            <div class="return-axis-label return-x-label" aria-hidden="true">
+              Zieljahr
+            </div>
+          </div>
+      </section>
+
+      <section class="view" data-title="Realität">
+        <div>
+          <div class="kicker">5 · Realität statt Wunschlinie</div>
+          <h2>7,8% Durchschnitt heißt nicht jedes Jahr +7,8%.</h2>
+          <p class="lead">
+            Historisch gab es Jahre mit +52% und Jahre mit −42%.
+            Das ist kein Ausnahmefall — das ist der Normalfall.
+          </p>
+          <p>
+            Wer langfristig investiert, braucht die Geduld, diese Schwankungen
+            auszuhalten — und darf sie nicht zum Ausstiegssignal machen.
+          </p>
+        </div>
+        <div class="panel panel-pager">
+          <div class="panel-tabs" aria-label="Realität-Ansichten">
+            <button class="panel-tab active" type="button" data-panel-tab="0">Jahresrenditen</button>
+            <button class="panel-tab" type="button" data-panel-tab="1">Wertentwicklung</button>
+            <button class="panel-tab" type="button" data-panel-tab="2">Risiken</button>
+          </div>
+
+          <div class="panel-page active">
+            <div class="small">Jährliche MSCI World Rendite, 1996–2022</div>
+            <div class="return-chart-area" id="returnChart" aria-label="Jährliche MSCI World Renditen 1996 bis 2022"></div>
+            <div class="return-chart-x-axis" aria-hidden="true">
+              <span>1996</span><span>2000</span><span>2005</span><span>2010</span><span>2015</span><span>2020</span><span>2022</span>
+            </div>
+            <div class="row"><span>Bestes Jahr</span><strong class="accent">+52%</strong></div>
+            <div class="row"><span>Schlechtestes Jahr</span><strong class="danger">−42%</strong></div>
+            <div class="row"><span>Ø p.a. 1995–2022</span><strong class="accent">7,8%</strong></div>
+            <p class="source">Quelle: DAI MSCI World Renditedreieck, Stand 31.12.2022.</p>
+          </div>
+
+          <div class="panel-page">
+            <div class="small">20.000€ angelegt 1995 – reale Wertentwicklung</div>
+            <div id="portfolioChart"></div>
+            <div class="row"><span>Einzahlung 1995</span><strong>20.000€</strong></div>
+            <div class="row"><span>Wert Ende 2022</span><strong class="accent">~145.000€</strong></div>
+            <p class="source">Auf Basis der DAI-Renditen. Ohne Steuern, Kosten und Inflation. Vergangenheitswerte sind keine Garantie.</p>
+          </div>
+
+          <div class="panel-page">
+            <div class="small">Was kann schiefgehen?</div>
+            <div style="margin-top: 10px; display: grid; gap: 5px;">
+              <div class="risk-compact">
+                <strong>Marktrisiko</strong>
+                <span>Aktienmärkte können stark fallen, auch über mehrere Jahre.</span>
+              </div>
+              <div class="risk-compact">
+                <strong>Timing-Risiko</strong>
+                <span>Direkt nach dem Einstieg kann es abwärtsgehen — das ist normal.</span>
+              </div>
+              <div class="risk-compact">
+                <strong>Psychologie</strong>
+                <span>Panikverkäufe zerstören oft genau den langfristigen Vorteil.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" data-title="Zinseszins">
+        <div>
+          <div class="kicker">4 · Zwei Szenarien</div>
+          <h2>Zeit ist der eigentliche Hebel.</h2>
+          <p class="lead">
+            Der Zinseszins braucht keine große Summe — er braucht Zeit.
+            Je länger Geld investiert bleibt, desto mehr wächst es
+            ohne weiteres Zutun.
+          </p>
+          <p>
+            Kein Versprechen über zukünftige Renditen — aber ein klares Bild,
+            warum früh anfangen wichtiger ist als der ideale Betrag.
+          </p>
+        </div>
+        <div class="panel panel-pager">
+          <div class="panel-tabs" aria-label="Szenario-Ansichten">
+            <button class="panel-tab active" type="button" data-panel-tab="0">Einmalanlage</button>
+            <button class="panel-tab" type="button" data-panel-tab="1">+ Sparplan</button>
+          </div>
+          <div class="panel-page active">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:9px;display:flex;gap:12px;">
+              <span style="display:flex;align-items:center;gap:5px;"><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:rgba(135,183,255,0.68);"></i>Einzahlungen</span>
+              <span style="display:flex;align-items:center;gap:5px;"><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:rgba(126,231,135,0.75);"></i>Zinseszins</span>
+            </div>
+            <div style="font-size:12px;color:var(--accent-2);margin-bottom:6px;">20.000€ Einmalanlage · 7,8%&thinsp;p.a.</div>
+            <div id="chartScenarioA"></div>
+            <div class="compound-summary">
+              <div class="compound-summary-row total">
+                <span>Gesamtwert nach 30 Jahren</span>
+                <strong id="scenarioATotal">…</strong>
+              </div>
+              <div class="compound-summary-row">
+                <span>davon eingezahlt</span>
+                <strong>20.000€</strong>
+              </div>
+              <div class="compound-summary-row">
+                <span>davon Zinseszins</span>
+                <strong id="scenarioAInterest">…</strong>
+              </div>
+            </div>
+            <p class="source" style="margin-top:8px;">Annahme: 7,8% p.a., keine Steuern, Gebühren oder Inflation.</p>
+          </div>
+          <div class="panel-page">
+            <div class="compound-multiplier"><span id="compoundMultiplierText">~4×</span>&thinsp;mehr als Einmalanlage</div>
+            <div style="font-size:12px;color:var(--accent);margin-bottom:6px;">20.000€ + 400€/Monat · 7,8%&thinsp;p.a.</div>
+            <div id="chartScenarioB"></div>
+            <div class="compound-summary">
+              <div class="compound-summary-row total">
+                <span>Gesamtwert nach 30 Jahren</span>
+                <strong id="scenarioBTotal">…</strong>
+              </div>
+              <div class="compound-summary-row">
+                <span>davon eingezahlt</span>
+                <strong id="scenarioBDeposits">…</strong>
+              </div>
+              <div class="compound-summary-row">
+                <span>davon Zinseszins</span>
+                <strong id="scenarioBInterest">…</strong>
+              </div>
+            </div>
+            <p class="source" style="margin-top:8px;">Annahme: 7,8% p.a., keine Steuern, Gebühren oder Inflation. Einzahlung am Monatsende.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" data-title="Umsetzung">
+        <div>
+          <div class="kicker">6 · Strategie &amp; Umsetzung</div>
+          <h2>Einmal eingerichtet — dauerhaft investiert.</h2>
+          <p class="lead">
+            Die Strategie: <strong>70% MSCI World</strong>, <strong>30% MSCI Emerging Markets</strong>.
+            Tausende Unternehmen weltweit — breit gestreut, günstig, ohne aktives Management.
+          </p>
+          <p>
+            Bei Trade Republic lässt sich das mit zwei automatischen Sparplänen
+            und einer Einmalzahlung einrichten. Danach läuft alles per
+            Dauerauftrag — kein weiterer Aufwand, keine aktive Entscheidung mehr nötig.
+          </p>
+        </div>
+        <div class="iphone-wrap">
+          <div class="iphone">
+            <!-- Volume buttons -->
+            <div class="iphone-btns">
+              <div class="iphone-btn" style="height:30px;"></div>
+              <div class="iphone-btn" style="height:46px;"></div>
+              <div class="iphone-btn" style="height:46px;"></div>
+            </div>
+            <div class="iphone-screen">
+              <!-- Dynamic Island -->
+              <div class="iphone-island"></div>
+              <!-- Status bar -->
+              <div class="ios-status">
+                <span>9:41</span>
+                <div class="ios-status-icons">
+                  <svg width="17" height="12" viewBox="0 0 17 12" fill="rgba(255,255,255,0.88)">
+                    <rect x="0" y="6" width="3" height="6" rx="0.5"/>
+                    <rect x="4.5" y="4" width="3" height="8" rx="0.5"/>
+                    <rect x="9" y="2" width="3" height="10" rx="0.5"/>
+                    <rect x="13.5" y="0" width="3" height="12" rx="0.5"/>
+                  </svg>
+                  <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="rgba(255,255,255,0.88)" stroke-linecap="round">
+                    <path stroke-width="1.5" d="M0.5 4C3 1.8 13 1.8 15.5 4"/>
+                    <path stroke-width="1.5" d="M3 6.5C4.8 5 11.2 5 13 6.5"/>
+                    <path stroke-width="1.5" d="M5.5 9C6.5 8 9.5 8 10.5 9"/>
+                    <circle cx="8" cy="11" r="1" fill="rgba(255,255,255,0.88)" stroke="none"/>
+                  </svg>
+                  <svg width="27" height="13" viewBox="0 0 27 13" fill="none">
+                    <rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="rgba(255,255,255,0.45)"/>
+                    <rect x="2" y="2" width="17" height="9" rx="2" fill="rgba(255,255,255,0.88)"/>
+                    <path d="M23.5 4.5v4c1.3-.4 2.2-1.2 2.2-2s-.9-1.6-2.2-2z" fill="rgba(255,255,255,0.38)"/>
+                  </svg>
+                </div>
+              </div>
+              <!-- Lock screen time -->
+              <div class="ios-time-big">9:41</div>
+              <div class="ios-date">Mittwoch, 20. Mai</div>
+              <!-- Push notifications -->
+              <div class="ios-notifs">
+                <div class="ios-notif">
+                  <div class="ios-notif-head">
+                    <div class="tr-app-icon">T</div>
+                    <span class="ios-notif-appname">Trade Republic</span>
+                    <span class="ios-notif-ts">jetzt</span>
+                  </div>
+                  <div class="ios-notif-title">Sparplan ausgeführt ✓</div>
+                  <div class="ios-notif-body">MSCI World ETF · 280,00&thinsp;€ wurden investiert</div>
+                </div>
+                <div class="ios-notif">
+                  <div class="ios-notif-head">
+                    <div class="tr-app-icon">T</div>
+                    <span class="ios-notif-appname">Trade Republic</span>
+                    <span class="ios-notif-ts">jetzt</span>
+                  </div>
+                  <div class="ios-notif-title">Sparplan ausgeführt ✓</div>
+                  <div class="ios-notif-body">MSCI Emerging Markets ETF · 120,00&thinsp;€ wurden investiert</div>
+                </div>
+              </div>
+              <div class="ios-home-bar"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="dots" id="dots" aria-label="Navigation"></nav>
+    <div class="counter" id="counter">1 / 7</div>
+    <div class="navhint">↑ ↓ Pfeiltasten · Scrollen · Dots anklicken</div>
+
+    <script>
+      const views = [...document.querySelectorAll(".view")];
+      const dots = document.getElementById("dots");
+      const counter = document.getElementById("counter");
+      const germanyInflationData = [
+        { year: 1995, cpi: 71.0, inflation: 1.865 },
+        { year: 1996, cpi: 72.0, inflation: 1.408 },
+        { year: 1997, cpi: 73.4, inflation: 1.944 },
+        { year: 1998, cpi: 74.0, inflation: 0.817 },
+        { year: 1999, cpi: 74.5, inflation: 0.676 },
+        { year: 2000, cpi: 75.5, inflation: 1.342 },
+        { year: 2001, cpi: 77.0, inflation: 1.987 },
+        { year: 2002, cpi: 78.1, inflation: 1.429 },
+        { year: 2003, cpi: 78.9, inflation: 1.024 },
+        { year: 2004, cpi: 80.2, inflation: 1.648 },
+        { year: 2005, cpi: 81.5, inflation: 1.621 },
+        { year: 2006, cpi: 82.8, inflation: 1.595 },
+        { year: 2007, cpi: 84.7, inflation: 2.295 },
+        { year: 2008, cpi: 86.9, inflation: 2.597 },
+        { year: 2009, cpi: 87.2, inflation: 0.345 },
+        { year: 2010, cpi: 88.1, inflation: 1.032 },
+        { year: 2011, cpi: 90.0, inflation: 2.157 },
+        { year: 2012, cpi: 91.7, inflation: 1.889 },
+        { year: 2013, cpi: 93.1, inflation: 1.527 },
+        { year: 2014, cpi: 94.0, inflation: 0.967 },
+        { year: 2015, cpi: 94.5, inflation: 0.532 },
+        { year: 2016, cpi: 95.0, inflation: 0.529 },
+        { year: 2017, cpi: 96.4, inflation: 1.474 },
+        { year: 2018, cpi: 98.1, inflation: 1.763 },
+        { year: 2019, cpi: 99.5, inflation: 1.427 },
+        { year: 2020, cpi: 100.0, inflation: 0.503 },
+        { year: 2021, cpi: 103.1, inflation: 3.1 },
+        { year: 2022, cpi: 110.2, inflation: 6.887 },
+        { year: 2023, cpi: 116.7, inflation: 5.898 },
+        { year: 2024, cpi: 119.3, inflation: 2.228 },
+        { year: 2025, cpi: 121.9, inflation: 2.179 },
+      ];
+      let current = 0;
+      let locked = false;
+
+      views.forEach((_, i) => {
+        const b = document.createElement("button");
+        b.className = "dot" + (i === 0 ? " active" : "");
+        b.setAttribute("aria-label", `Zu View ${i + 1}`);
+        b.addEventListener("click", () => go(i));
+        dots.appendChild(b);
+      });
+
+      const dotEls = [...document.querySelectorAll(".dot")];
+
+      document.querySelectorAll("[data-panel-tab]").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const pager = tab.closest(".panel-pager");
+          const index = Number(tab.dataset.panelTab);
+          const tabs = [...pager.querySelectorAll(".panel-tab")];
+          const pages = [...pager.querySelectorAll(".panel-page")];
+          tabs.forEach((item, i) => item.classList.toggle("active", i === index));
+          pages.forEach((item, i) => item.classList.toggle("active", i === index));
+
+          const newPage = pages[index];
+          const bars = [...newPage.querySelectorAll(".compound-bar-group")];
+          if (bars.length) {
+            bars.forEach((b) => { b.style.transitionDuration = "0s"; b.style.transform = "scaleY(0)"; });
+            newPage.getBoundingClientRect();
+            bars.forEach((b) => { b.style.transitionDuration = ""; b.style.transform = ""; });
+          }
+          const mult = newPage.querySelector(".compound-multiplier");
+          if (mult) {
+            mult.style.transition = "none";
+            mult.style.opacity = "0";
+            mult.style.transform = "translateY(6px)";
+            setTimeout(() => {
+              mult.style.transition = "opacity 0.5s, transform 0.5s";
+              mult.style.opacity = "1";
+              mult.style.transform = "none";
+            }, 650);
+          }
+        });
+      });
+
+      function go(next) {
+        if (next < 0 || next >= views.length || next === current || locked)
+          return;
+        locked = true;
+        const direction = next > current ? "exit-up" : "exit-down";
+        views[current].classList.remove("active");
+        views[current].classList.add(direction);
+        dotEls[current].classList.remove("active");
+        current = next;
+        views[current].classList.remove("exit-up", "exit-down");
+        views[current].classList.add("active");
+        dotEls[current].classList.add("active");
+        counter.textContent = `${current + 1} / ${views.length}`;
+        setTimeout(() => {
+          views.forEach((v) => v.classList.remove("exit-up", "exit-down"));
+          locked = false;
+        }, 780);
+      }
+
+      window.addEventListener("keydown", (e) => {
+        if (["ArrowDown", "PageDown", " "].includes(e.key)) {
+          e.preventDefault();
+          go(current + 1);
+        }
+        if (["ArrowUp", "PageUp"].includes(e.key)) {
+          e.preventDefault();
+          go(current - 1);
+        }
+        if (e.key === "Home") go(0);
+        if (e.key === "End") go(views.length - 1);
+      });
+
+      let wheelAccumulator = 0;
+      window.addEventListener(
+        "wheel",
+        (e) => {
+          wheelAccumulator += e.deltaY;
+          if (Math.abs(wheelAccumulator) > 90) {
+            go(current + (wheelAccumulator > 0 ? 1 : -1));
+            wheelAccumulator = 0;
+          }
+        },
+        { passive: true },
+      );
+
+      let startY = null;
+      window.addEventListener(
+        "touchstart",
+        (e) => (startY = e.touches[0].clientY),
+        { passive: true },
+      );
+      window.addEventListener(
+        "touchend",
+        (e) => {
+          if (startY === null) return;
+          const dy = startY - e.changedTouches[0].clientY;
+          if (Math.abs(dy) > 48) go(current + (dy > 0 ? 1 : -1));
+          startY = null;
+        },
+        { passive: true },
+      );
+
+      function buildCompoundCharts() {
+        const rate = 0.078, rMo = rate / 12;
+        const years = [5, 10, 15, 20, 25, 30];
+
+        const dataA = years.map((T) => {
+          const total = 20000 * Math.pow(1 + rate, T);
+          return { year: T, total, deposits: 20000, interest: total - 20000 };
+        });
+        const dataB = years.map((T) => {
+          const n = T * 12, factor = Math.pow(1 + rMo, n);
+          const total = 20000 * factor + 400 * (factor - 1) / rMo;
+          const deposits = 20000 + 400 * n;
+          return { year: T, total, deposits, interest: total - deposits };
+        });
+
+        function fmt(v) { return Math.round(v).toLocaleString("de-DE") + "\u202f€"; }
+        function fmtFinal(v) { return "~" + Math.round(v / 1000).toLocaleString("de-DE") + ".000\u202f€"; }
+
+        const sharedMax = null; // each chart uses its own fixed scale
+
+        const aTot = document.getElementById("scenarioATotal");
+        const aInt = document.getElementById("scenarioAInterest");
+        const bTot = document.getElementById("scenarioBTotal");
+        const bDep = document.getElementById("scenarioBDeposits");
+        const bInt = document.getElementById("scenarioBInterest");
+        const multTxt = document.getElementById("compoundMultiplierText");
+
+        if (aTot) aTot.textContent = fmtFinal(dataA[5].total);
+        if (aInt) aInt.textContent = fmtFinal(dataA[5].interest);
+        if (bTot) bTot.textContent = fmtFinal(dataB[5].total);
+        if (bDep) bDep.textContent = fmtFinal(dataB[5].deposits);
+        if (bInt) bInt.textContent = fmtFinal(dataB[5].interest);
+        if (multTxt) multTxt.textContent = "~" + (Math.round(dataB[5].total / dataA[5].total * 10) / 10).toLocaleString("de-DE") + "×";
+
+        function drawChart(id, data, maxV) {
+          const container = document.getElementById(id);
+          if (!container) return;
+          const W = 280, H = 130, padL = 36, padB = 18, padT = 6;
+          const chartH = H - padT - padB;
+          const scale = chartH / maxV;
+          const baseY = H - padB;
+          const slotW = (W - padL) / data.length;
+          const barW = Math.min(22, slotW * 0.62);
+          const ns = "http://www.w3.org/2000/svg";
+          const svg = document.createElementNS(ns, "svg");
+          svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+          svg.style.overflow = "visible";
+          svg.style.width = "100%";
+          const mk = (tag, a) => {
+            const el = document.createElementNS(ns, tag);
+            Object.entries(a).forEach(([k, v]) => el.setAttribute(k, v));
+            return el;
+          };
+          svg.appendChild(mk("line", { x1: padL, x2: W, y1: baseY, y2: baseY, stroke: "rgba(255,255,255,0.15)" }));
+          svg.appendChild(mk("line", { x1: padL, x2: padL, y1: padT, y2: baseY, stroke: "rgba(255,255,255,0.12)" }));
+          [0.25, 0.5, 0.75, 1.0].forEach((fr) => {
+            const y = baseY - maxV * fr * scale;
+            if (y < padT) return;
+            svg.appendChild(mk("line", { x1: padL, x2: W, y1: y, y2: y, stroke: "rgba(255,255,255,0.06)", "stroke-dasharray": "3 3" }));
+            const v = maxV * fr;
+            const t = mk("text", { x: padL - 3, y: y + 3.5, "text-anchor": "end", fill: "rgba(255,255,255,0.3)", "font-size": "7.5" });
+            t.textContent = v >= 1000 ? Math.round(v / 1000) + "k" : Math.round(v);
+            svg.appendChild(t);
+          });
+          data.forEach((d, i) => {
+            const cx = padL + (i + 0.5) * slotW;
+            const bx = cx - barW / 2;
+            const dH = Math.max(1, d.deposits * scale);
+            const iH = Math.max(0, d.interest * scale);
+            const g = mk("g", { class: "compound-bar-group" });
+            g.style.transitionDelay = `${0.04 + i * 0.09}s`;
+            g.style.cursor = "default";
+            g.appendChild(mk("rect", { x: bx, y: baseY - dH, width: barW, height: dH, fill: "rgba(135,183,255,0.68)" }));
+            if (iH > 0.5) g.appendChild(mk("rect", { x: bx, y: baseY - dH - iH, width: barW, height: iH, fill: "rgba(126,231,135,0.75)" }));
+            const tipText = `${d.year} Jahre\nEingezahlt:  ${fmt(d.deposits)}\nZinseszins: ${fmt(d.interest)}\nGesamt:       ${fmt(d.total)}`;
+            g.addEventListener("mouseenter", (e) => {
+              returnTooltip.textContent = tipText;
+              returnTooltip.classList.add("visible");
+              positionTooltip(e);
+            });
+            g.addEventListener("mousemove", positionTooltip);
+            g.addEventListener("mouseleave", () => returnTooltip.classList.remove("visible"));
+            svg.appendChild(g);
+            const t = mk("text", { x: cx, y: baseY + 13, "text-anchor": "middle", fill: "rgba(255,255,255,0.38)", "font-size": "9" });
+            t.textContent = `${d.year}J`;
+            svg.appendChild(t);
+          });
+          container.appendChild(svg);
+        }
+
+        drawChart("chartScenarioA", dataA, 200000);
+        drawChart("chartScenarioB", dataB, 800000);
+      }
+
+      function buildAnnualReturnChart() {
+        const chartEl = document.getElementById("returnChart");
+        if (!chartEl) return;
+        const data = returnRows.map((row) => ({
+          year: row.start + 1,
+          value: row.values[0],
+        }));
+        const chartH = 140;
+        const maxPos = Math.max(...data.map((r) => r.value));
+        const maxNeg = Math.abs(Math.min(...data.map((r) => r.value)));
+        const zeroY = Math.round((chartH * maxPos) / (maxPos + maxNeg));
+        const scale = zeroY / maxPos;
+        const n = data.length;
+
+        const zeroLine = document.createElement("div");
+        zeroLine.className = "return-zero-line";
+        zeroLine.style.top = `${zeroY}px`;
+        chartEl.appendChild(zeroLine);
+
+        const avgLine = document.createElement("div");
+        avgLine.className = "return-avg-line";
+        avgLine.setAttribute("data-label", "Ø 7,8%");
+        avgLine.style.top = `${Math.round(zeroY - 7.8 * scale)}px`;
+        chartEl.appendChild(avgLine);
+
+        data.forEach((item, i) => {
+          const bar = document.createElement("div");
+          const isPos = item.value >= 0;
+          bar.className = `rbar ${isPos ? "pos" : "neg"}`;
+          const h = Math.max(2, Math.abs(item.value) * scale);
+          bar.style.width = `calc(${100 / n}% - 2px)`;
+          bar.style.left = `${i * (100 / n)}%`;
+          bar.style.height = `${h}px`;
+          bar.style.top = isPos ? `${zeroY - h}px` : `${zeroY}px`;
+          bar.style.transitionDelay = `${i * 0.025}s`;
+          const sign = item.value > 0 ? "+" : "";
+          const tipText = `${item.year}: ${sign}${item.value.toFixed(1).replace(".", ",")}%`;
+          bar.addEventListener("mouseenter", (e) => {
+            returnTooltip.textContent = tipText;
+            returnTooltip.classList.add("visible");
+            positionTooltip(e);
+          });
+          bar.addEventListener("mousemove", positionTooltip);
+          bar.addEventListener("mouseleave", () => returnTooltip.classList.remove("visible"));
+          chartEl.appendChild(bar);
+        });
+      }
+
+      function buildPortfolioChart() {
+        const container = document.getElementById("portfolioChart");
+        if (!container) return;
+        let portfolio = 20000;
+        const history = [{ year: 1995, value: portfolio }];
+        returnRows.forEach((row) => {
+          portfolio *= 1 + row.values[0] / 100;
+          history.push({ year: row.start + 1, value: portfolio });
+        });
+
+        const W = 520, H = 170, padL = 36, padB = 14, padT = 16;
+        const maxVal = Math.max(...history.map((h) => h.value)) * 1.08;
+        const n = history.length - 1;
+        const toX = (i) => padL + (i / n) * (W - padL - 4);
+        const toY = (v) => padT + (1 - v / maxVal) * (H - padT - padB);
+        const baseY = H - padB;
+
+        let d = `M ${toX(0)} ${toY(history[0].value)}`;
+        for (let i = 1; i < history.length; i++) {
+          const [x1, y1] = [toX(i - 1), toY(history[i - 1].value)];
+          const [x2, y2] = [toX(i), toY(history[i].value)];
+          const cp = (x1 + x2) / 2;
+          d += ` C ${cp} ${y1},${cp} ${y2},${x2} ${y2}`;
+        }
+        const areaD = `${d} L ${toX(n)} ${baseY} L ${toX(0)} ${baseY} Z`;
+
+        const ns = "http://www.w3.org/2000/svg";
+        const svg = document.createElementNS(ns, "svg");
+        svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+        svg.style.overflow = "visible";
+        svg.style.marginTop = "8px";
+
+        const mkEl = (tag, attrs) => {
+          const el = document.createElementNS(ns, tag);
+          Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+          return el;
+        };
+
+        svg.appendChild(mkEl("path", { d: areaD, fill: "rgba(126,231,135,0.07)", stroke: "none" }));
+        svg.appendChild(mkEl("line", { x1: padL, x2: W - 4, y1: baseY, y2: baseY, stroke: "rgba(255,255,255,0.15)" }));
+        svg.appendChild(mkEl("line", { x1: padL, x2: padL, y1: padT, y2: baseY, stroke: "rgba(255,255,255,0.12)" }));
+
+        [20000, 80000, 145000].forEach((v) => {
+          const y = toY(v);
+          svg.appendChild(mkEl("line", { x1: padL, x2: W - 4, y1: y, y2: y, stroke: "rgba(255,255,255,0.06)", "stroke-dasharray": "4 3" }));
+          const t = mkEl("text", { x: padL - 3, y: y + 3.5, "text-anchor": "end", fill: "rgba(255,255,255,0.35)", "font-size": "9" });
+          t.textContent = v >= 1000 ? `${Math.round(v / 1000)}k` : `${v}`;
+          svg.appendChild(t);
+        });
+
+        const crashes = [{ year: 2002, label: "Dotcom" }, { year: 2009, label: "Finanzkrise" }, { year: 2022, label: "2022" }];
+        crashes.forEach(({ year, label }) => {
+          const idx = history.findIndex((h) => h.year === year);
+          if (idx < 0) return;
+          const x = toX(idx), y = toY(history[idx].value);
+          svg.appendChild(mkEl("circle", { cx: x, cy: y, r: 3, fill: "#ff7b72" }));
+          const t = mkEl("text", { x, y: y - 6, "text-anchor": "middle", fill: "#ff7b72", "font-size": "9" });
+          t.textContent = label;
+          svg.appendChild(t);
+        });
+
+        svg.appendChild(mkEl("path", { d, fill: "none", stroke: "var(--accent)", "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round" }));
+
+        [1995, 2000, 2005, 2010, 2015, 2020, 2022].forEach((year) => {
+          const idx = history.findIndex((h) => h.year === year);
+          if (idx < 0) return;
+          const t = mkEl("text", { x: toX(idx), y: baseY + 11, "text-anchor": "middle", fill: "rgba(255,255,255,0.38)", "font-size": "9" });
+          t.textContent = year;
+          svg.appendChild(t);
+        });
+
+        const crosshair = mkEl("line", {
+          x1: 0, x2: 0, y1: padT, y2: baseY,
+          stroke: "rgba(255,255,255,0.22)",
+          "stroke-width": "1",
+          "stroke-dasharray": "3 2",
+        });
+        crosshair.style.display = "none";
+        svg.appendChild(crosshair);
+
+        const markerDot = mkEl("circle", {
+          cx: 0, cy: 0, r: 4,
+          fill: "var(--accent)",
+          stroke: "#08090d",
+          "stroke-width": "1.5",
+        });
+        markerDot.style.display = "none";
+        svg.appendChild(markerDot);
+
+        svg.style.cursor = "crosshair";
+        svg.addEventListener("mousemove", (e) => {
+          const rect = svg.getBoundingClientRect();
+          const svgX = ((e.clientX - rect.left) / rect.width) * W;
+          const idx = Math.max(0, Math.min(n, Math.round((svgX - padL) / (W - padL - 4) * n)));
+          const item = history[idx];
+          crosshair.setAttribute("x1", toX(idx));
+          crosshair.setAttribute("x2", toX(idx));
+          markerDot.setAttribute("cx", toX(idx));
+          markerDot.setAttribute("cy", toY(item.value));
+          crosshair.style.display = "";
+          markerDot.style.display = "";
+          returnTooltip.textContent = `${item.year}: ${Math.round(item.value).toLocaleString("de-DE")}€`;
+          returnTooltip.classList.add("visible");
+          positionTooltip(e);
+        });
+        svg.addEventListener("mouseleave", () => {
+          crosshair.style.display = "none";
+          markerDot.style.display = "none";
+          returnTooltip.classList.remove("visible");
+        });
+
+        container.appendChild(svg);
+      }
+
+      const returnTriangle = document.getElementById("returnTriangle");
+      const returnRows = [
+        { start: 1995, values: [20.7, 28.5, 21.4, 31.0, 17.2, 8.2, -4.0, -0.5, 1.0, 5.3, 5.7, 4.6, -2.9, 0.8, 3.0, 2.5, 3.7, 5.3, 6.5, 6.9, 7.2, 7.3, 6.5, 7.9, 7.9, 9.1, 7.8] },
+        { start: 1996, values: [23.1, 17.0, 31.9, 14.2, 4.6, -8.4, -3.1, -0.9, 4.3, 4.9, 3.9, -4.2, 0.0, 2.5, 2.0, 3.4, 5.1, 6.4, 6.8, 7.2, 7.3, 6.4, 7.9, 7.9, 9.2, 7.8] },
+        { start: 1997, values: [12.9, 37.4, 11.0, 0.7, -13.0, -5.5, -2.3, 3.8, 4.6, 3.5, -5.3, -0.5, 2.3, 1.8, 3.2, 5.1, 6.5, 6.9, 7.3, 7.4, 6.5, 8.1, 8.0, 9.3, 7.9] },
+        { start: 1998, values: [51.7, 3.7, -4.9, -18.6, -7.7, -3.4, 3.8, 4.8, 3.5, -6.2, -0.8, 2.3, 1.7, 3.3, 5.3, 6.8, 7.2, 7.6, 7.6, 6.7, 8.3, 8.2, 9.6, 8.1] },
+        { start: 1999, values: [-17.2, -12.6, -24.7, -9.0, -3.5, 4.8, 5.7, 4.0, -6.7, -0.7, 2.6, 1.9, 3.6, 5.7, 7.3, 7.6, 8.0, 8.0, 7.0, 8.7, 8.5, 10.0, 8.4] },
+        { start: 2000, values: [-9.3, -27.6, -6.4, -0.9, 8.1, 8.1, 5.6, -6.7, -0.1, 3.4, 2.5, 4.2, 6.4, 8.0, 8.3, 8.6, 8.6, 7.4, 9.2, 9.0, 10.5, 8.8] },
+        { start: 2001, values: [-33.8, -0.3, 3.3, 12.7, 11.2, 7.3, -7.1, 0.4, 4.1, 3.1, 4.8, 7.1, 8.7, 9.0, 9.3, 9.1, 7.9, 9.7, 9.5, 11.0, 9.1] },
+        { start: 2002, values: [18.7, 9.3, 18.5, 14.2, 8.6, -8.4, 0.3, 4.6, 3.3, 5.2, 7.7, 9.3, 9.5, 9.8, 9.6, 8.2, 10.1, 9.8, 11.4, 9.4] },
+        { start: 2003, values: [4.0, 20.8, 14.1, 7.1, -12.2, -1.0, 4.2, 2.9, 5.1, 7.8, 9.6, 9.8, 10.0, 9.8, 8.2, 10.3, 10.0, 11.7, 9.5] },
+        { start: 2004, values: [29.7, 14.3, 5.0, -17.2, -2.2, 4.1, 2.6, 5.2, 8.2, 10.1, 10.2, 10.4, 10.1, 8.4, 10.6, 10.2, 12.0, 9.7] },
+        { start: 2005, values: [11.1, 0.2, -24.3, -3.2, 4.6, 2.8, 5.6, 8.9, 10.9, 10.9, 11.0, 10.6, 8.7, 11.0, 10.6, 12.5, 10.0] },
+        { start: 2006, values: [-7.7, -32.9, -1.9, 7.2, 4.1, 7.0, 10.4, 12.4, 12.1, 12.0, 11.4, 9.2, 11.7, 11.2, 13.1, 10.4] },
+        { start: 2007, values: [-42.2, 7.1, 14.2, 7.5, 9.7, 12.9, 14.7, 13.8, 13.4, 12.6, 10.0, 12.5, 11.9, 13.9, 10.9] },
+        { start: 2008, values: [38.3, 25.8, 10.9, 12.2, 15.2, 16.6, 15.2, 14.5, 13.3, 10.3, 13.1, 12.3, 14.4, 11.1] },
+        { start: 2009, values: [23.4, 5.6, 9.9, 14.5, 16.4, 14.8, 14.1, 12.8, 9.5, 12.7, 11.9, 14.3, 10.7] },
+        { start: 2010, values: [2.9, 10.2, 15.9, 17.8, 15.3, 14.4, 12.9, 9.1, 12.8, 11.9, 14.5, 10.6] },
+        { start: 2011, values: [9.5, 17.6, 19.3, 15.4, 14.4, 12.6, 8.3, 12.6, 11.7, 14.7, 10.3] },
+        { start: 2012, values: [18.7, 20.7, 14.6, 13.8, 11.9, 7.1, 12.3, 11.3, 14.7, 9.8] },
+        { start: 2013, values: [24.2, 12.2, 12.9, 10.9, 5.4, 11.9, 10.9, 14.9, 9.4] },
+        { start: 2014, values: [1.5, 11.3, 9.6, 3.3, 11.8, 10.7, 15.3, 9.0] },
+        { start: 2015, values: [22.6, 11.9, 2.3, 13.0, 11.5, 16.7, 9.0] },
+        { start: 2016, values: [8.3, -2.7, 13.4, 11.6, 17.8, 8.5] },
+        { start: 2017, values: [-11.6, 16.2, 12.8, 20.1, 8.2] },
+        { start: 2018, values: [23.6, 15.3, 23.5, 7.4] },
+        { start: 2019, values: [24.0, 29.4, 5.4] },
+        { start: 2020, values: [31.3, -2.0] },
+        { start: 2021, values: [-11.2] },
+      ];
+
+      const returnTooltip = document.createElement("div");
+      returnTooltip.id = "returnTooltip";
+      returnTooltip.className = "return-tooltip";
+      returnTooltip.setAttribute("role", "tooltip");
+      document.body.appendChild(returnTooltip);
+
+      function positionTooltip(e) {
+        const tw = returnTooltip.offsetWidth || 230;
+        const left = e.clientX + tw + 20 > window.innerWidth
+          ? e.clientX - tw - 14
+          : e.clientX + 14;
+        returnTooltip.style.left = `${left}px`;
+        returnTooltip.style.top = `${e.clientY - 34}px`;
+      }
+
+      returnRows.forEach((row, rowIndex) => {
+        row.values.forEach((value, valueIndex) => {
+          const cell = document.createElement("div");
+          const tone = value < 0 ? "negative" : value < 3 ? "neutral" : value > 12 ? "strong" : "positive";
+          const targetYear = row.start + valueIndex + 1;
+          const isOneYear = valueIndex === 0;
+          const isAnchor = row.start === 1995 && targetYear === 2022;
+          cell.className = `return-cell ${tone}${isOneYear || isAnchor ? " show-value" : ""}${isAnchor ? " anchor" : ""}`;
+          if (isOneYear) cell.textContent = Math.round(value) + "%";
+          if (isAnchor) cell.textContent = "7,8%";
+          cell.style.gridColumn = `${targetYear - 1995} / span 1`;
+          cell.style.gridRow = `${2022 - row.start} / span 1`;
+          cell.style.transitionDelay = `${(rowIndex + valueIndex) * 0.004}s`;
+          const formattedValue = value.toLocaleString("de-DE", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+          cell.addEventListener("mouseenter", (e) => {
+            returnTooltip.textContent = `${row.start} – ${targetYear} angelegt: ${formattedValue}% Rendite`;
+            returnTooltip.classList.add("visible");
+            positionTooltip(e);
+          });
+          cell.addEventListener("mousemove", positionTooltip);
+          cell.addEventListener("mouseleave", () => returnTooltip.classList.remove("visible"));
+          returnTriangle.appendChild(cell);
+        });
+      });
+
+      buildCompoundCharts();
+      buildAnnualReturnChart();
+      buildPortfolioChart();
+
+      const inflationChart = document.getElementById("inflationChart");
+      const purchasingPowerList = document.getElementById(
+        "purchasingPowerList",
+      );
+      const purchasingPowerStart = 20000;
+      const baseCpi = germanyInflationData[0].cpi;
+      const keyYears = new Set([1995, 2000, 2010, 2020, 2025]);
+
+      germanyInflationData.forEach((item) => {
+        const purchasingPower = (purchasingPowerStart * baseCpi) / item.cpi;
+        const bar = document.createElement("div");
+        bar.className = `mini-bar ${item.inflation > 3 ? "high" : item.inflation < 1 ? "low" : ""}`;
+        bar.style.height = `${Math.max(4, (item.inflation / 7) * 100)}%`;
+        bar.title = `${item.year}: ${item.inflation.toLocaleString("de-DE", { maximumFractionDigits: 1 })}% Inflation`;
+        inflationChart.appendChild(bar);
+
+        if (keyYears.has(item.year)) {
+          const row = document.createElement("div");
+          row.className = "row";
+          const label =
+            item.year === 1995
+              ? "1995 · Ausgangswert"
+              : item.year === 2025
+                ? "2025 · heutige Kaufkraft"
+                : item.year;
+          row.innerHTML = `<span>${label}</span><strong${item.year === 2025 ? ' class="warn"' : ""}>${Math.round(purchasingPower).toLocaleString("de-DE")}€</strong>`;
+          purchasingPowerList.appendChild(row);
+        }
+      });
+    </script>
+  </body>
+</html>
